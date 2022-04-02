@@ -10,7 +10,7 @@ const routes = [
         component: () => import('../views/Login.vue'),
     },
     {
-        path: '/',
+        path: '/home',
         component: () => import( '../views/Home.vue'),
         children: [
             // {
@@ -106,18 +106,18 @@ const router = new VueRouter({
 })
 
 // 路由拦截器
-router.beforeEach((to, from, next) => {
-    if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
-        if (Boolean(sessionStorage.getItem("uid"))) { // 通过vuex state获取当前的user是否存在
-            next();
-        } else {
-            next({
-                path: '/',
-            })
-        }
-    } else {
-        next();
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
+//         if (Boolean(sessionStorage.getItem("uid"))) { // 通过vuex state获取当前的user是否存在
+//             next();
+//         } else {
+//             next({
+//                 path: '/',
+//             })
+//         }
+//     } else {
+//         next();
+//     }
+// })
 
 export default router

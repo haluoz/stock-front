@@ -61,17 +61,17 @@
                     {
                         icon: 'el-icon-pie-chart',
                         index: 'dashboard',
-                        title: '资金股份'
+                        title: 'holding'
                     },
                     {
                         icon: 'el-icon-s-order',
                         index: 'buy',
-                        title: '买入'
+                        title: 'purchase'
                     },
                     {
                         icon: 'el-icon-sell',
                         index: 'sell',
-                        title: '卖出'
+                        title: 'sell'
                     },
                     {
                         icon: 'el-icon-search',

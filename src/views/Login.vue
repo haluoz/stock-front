@@ -3,28 +3,28 @@
     <div class="login-wrap">
         <!--    第二步，增加element ui    -->
         <!--    第三步   -->
-        <el-form class="login-container">
+        <el-form class="login-container" :model="ruleForm" :rules="rules" ref="ruleForm">
             <h3 class="title">用户登录</h3>
-            <el-form-item>
-                <el-input type="text" placeholder="账号"></el-input>
+            <el-form-item prop="uid">
+                <el-input v-model="ruleForm.uid" type="text" placeholder="账号"></el-input>
             </el-form-item>
-            <el-form-item>
-                <el-input type="password" placeholder="密码"></el-input>
+            <el-form-item prop="password">
+                <el-input v-model="ruleForm.password" type="password" placeholder="密码"></el-input>
             </el-form-item>
             <el-row>
                 <el-col :span="12">
-                    <el-form-item>
+                    <el-form-item prop="captcha">
                         <el-row>
-                            <el-input type="text" auto-complete="off" placeholder="验证码"/>
+                            <el-input v-model="ruleForm.captcha" type="text" auto-complete="off" placeholder="验证码" @keyup.enter.native="submitForm('ruleForm')"/>
                         </el-row>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <img />
+                    <img :src="codeImg" />
                 </el-col>
             </el-row>
             <el-form-item>
-                <el-button type="primary" style="width:100%;">
+                <el-button type="primary" style="width:100%;" :loading="logining" @click="submitForm('ruleForm')">
                     登录
                 </el-button>
             </el-form-item>
@@ -34,8 +34,81 @@
 </template>
 
 <script>
+    import {queryCaptcha, login} from '../api/loginApi';
+    import encrytedMD5 from 'js-md5';
+
     export default {
-        name: "Login"
+        name: "Login",
+        created(){
+            this.getCode();
+        },
+        data(){
+            return{
+                //提交表单
+                ruleForm:{
+                    uid: '',
+                    password: '',
+                    captcha: '',
+                    captchaId: ''
+                },
+                //2验证码图片
+                codeImg: '',
+                //3限制规则
+                rules:{
+                    uid: [{required: true, message: '请输入账号', trigger: 'blur' }],
+                    password: [{required: true, message: '请输入密码', trigger: 'blur' }],
+                    captcha: [{required: true, message: '请输入验证码', trigger: 'blur' }]
+                },
+                //4防止前端重复提交
+                logining: false
+            }
+        },
+        methods:{
+            getCode(){
+                queryCaptcha(this.captchaCallback);
+            },
+            captchaCallback(code, message, captchaData){
+                this.ruleForm.captchaId = captchaData.id;
+                this.codeImg = captchaData.imageBase64;
+            },
+            //提交表单
+            submitForm(formName){
+                this.$refs[formName].validate((valid) => {
+                    if(valid){
+                        login({
+                            uid: this.ruleForm.uid,
+                            password: encrytedMD5(this.ruleForm.password),
+                            captcha: this.ruleForm.captcha,
+                            captchaId: this.ruleForm.captchaId,
+                        }, this.loginCallback)
+                    }else {
+                        this.$message.error('用户名密码不能为空');
+                        this.logining = false;
+                    }
+                })
+            },
+            loginCallback(code, message, acc){
+                if(code == 2){
+                    //登录失败
+                    this.$message.error(message);
+                    this.logining = false;
+                    this.getCode();
+                }else{
+                    //登录成功
+                    sessionStorage.setItem("uid", acc.uid);
+                    sessionStorage.setItem("token", acc.token);
+                    if(acc.lastLoginDate.length > 1){
+                        this.$message.success('登录成功:'+acc.lastLoginDate+acc.lastLoginTime);
+                    }else{
+                        this.$message.success('登录成功');
+                    }
+                    setTimeout(()=>{
+                        this.logining = false;
+                        this.$router.push({path: '/dashboard'});
+                    }, 1000)
+                }
+            }
+        }
     }
 </script>
 

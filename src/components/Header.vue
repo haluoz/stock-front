@@ -12,7 +12,7 @@
         </div>
 
         <!-- 第三步 LOGO -->
-        <div class="logo">Gudy证券交易系统</div>
+        <div class="logo">securities</div>
 
         <!-- 第四步  右侧下拉菜单-->
         <div class="header-right">
