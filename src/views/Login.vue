@@ -36,6 +36,7 @@
 <script>
     import {queryCaptcha, login} from '../api/loginApi';
     import encrytedMD5 from 'js-md5';
+    import {queryBalance, queryOrder, queryPosition, queryTrade} from "../api/orderApi";
 
     export default {
         name: "Login",
@@ -88,7 +89,7 @@
                 })
             },
             loginCallback(code, message, acc){
-                if(code == 2){
+                if(code === 2){
                     //登录失败
                     this.$message.error(message);
                     this.logining = false;
@@ -105,6 +106,11 @@
                     setTimeout(()=>{
                         this.logining = false;
                         this.$router.push({path: '/dashboard'});
+                        //execute query method
+                        queryBalance();
+                        queryTrade();
+                        queryOrder();
+                        queryPosition();
                     }, 1000)
                 }
             }

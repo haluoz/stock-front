@@ -21,11 +21,13 @@
         >
             <el-table-column prop="code" label="代码" align="center"
                              sortable :sort-orders="['ascending', 'descending']"
+                             :formatter="codeFormatter"
             />
             <el-table-column prop="name" label="名称" align="center"/>
             <el-table-column prop="count" label="股票数量" align="center"/>
-            <el-table-column prop="cost" label="总投入" align="center"/>
-            <el-table-column label="成本" align="center"/>
+            <el-table-column prop="cost" label="总投入" align="center"
+                             :formatter="moneyFormatter"/>
+            <el-table-column label="成本" align="center" :formatter="costFormatter"/>
         </el-table>
 
         <div class="pagination">
@@ -33,7 +35,7 @@
                        type="primary" size="mini"
                        style="margin-top:2px;float: right"
                        icon="el-icon-refresh"
-                       @click="">
+                       @click="queryRefresh">
                 刷新
             </el-button>
             <el-pagination
@@ -49,21 +51,38 @@
 </template>
 
 <script>
+    import {constants} from "../api/constants";
+    import {codeFormat, moneyFormat} from "../api/format";
+    import {queryBalance, queryPosition} from "../api/orderApi";
 
     export default {
         name: "PosiList",
+        created(){
+            this.tableData = this.positionData;
+            this.balance = this.balanceData;
+        },
+        computed:{
+            positionData(){
+              return this.$store.state.positionData;
+            },
+            balanceData(){
+                return moneyFormat(this.$store.state.balance);
+            }
+        },
+        watch:{
+            positionData:function(val){
+                this.tableData = val;
+                this.dataTotalCount = val.length;
+            },
+            balanceData:function(val){
+                this.balance = val;
+            },
+        },
         data() {
             return {
-                tableData: [
-                    {code: '600025', name: '华能水电', count: 100, cost: 20},
-                    {code: '600000', name: '浦发银行', count: 100, cost: 20},
-                    {code: '000001', name: '平安银行', count: 100, cost: 20},
-                    {code: '600886', name: '国投电力', count: 100, cost: 20},
-                ],
+                tableData: [],
                 dataTotalCount: 4,
-
                 balance: 10,
-
                 query: {
                     currentPage: 1, // 当前页码
                     pageSize: 2 // 每页的数据条数
@@ -71,11 +90,23 @@
             };
         },
         methods: {
+            costFormatter(row, column){
+                return (row.cost / constants.MULTI_FACTOR / row.count).toFixed(2);
+            },
+            moneyFormatter(row, column){
+                return moneyFormat(row.cost);
+            },
+            codeFormatter(row, column){
+                return codeFormat(row.code);
+            },
+            queryRefresh(){
+                queryPosition();
+                queryBalance();
+            },
             // 分页导航
             handlePageChange(val) {
                 this.$set(this.query, 'currentPage', val);
             },
-
             //处理排序
             changeTableSort(column) {
                 console.log('600886' - '000001');

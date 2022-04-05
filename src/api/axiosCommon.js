@@ -42,7 +42,7 @@ export const reqRealEndAsync=(method, baseUrl, url, params, callback) =>{
     });
 }
 // 通用公用方法（不包含回调）
-export const reqRealEndAsyncNoCallbck=(method, baseUrl, url, params) =>{
+export const reqRealEndAsyncNoCallback=(method, baseUrl, url, params) =>{
     params.token = sessionStorage.getItem('token');
     return axios({
         timeout: 5000,
