@@ -3,6 +3,15 @@ export const constants ={
     //买卖方向
     BUY:0,
     SELL:1,
+
+    //委托类型
+    NEW_ORDER: 0,
+    CANCEL_ORDER: 1,
+
+    //价格类型
+    LIMIT: 0,
+    MARKET: 1,
+    
     //委托状态
     //未报，撤单，部分撤单，已报，部分成交，废单
     NOT_ORDER: -1,

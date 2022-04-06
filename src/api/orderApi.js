@@ -38,5 +38,11 @@ export const queryPosition =()=>{
 
 //股票代码
 export const queryStocksByCode =(params)=>{
-    reqRealEndAsyncNoCallback("post", config.domain, "/api/getStockInfo", params)
+    return reqRealEndAsyncNoCallback("get", config.domain, "/api/getStockInfo", params);
 };
+
+//发送委托
+export const sendOrder = (params, callback) =>{
+    reqRealEndAsync("post", config.domain, "/api/sendOrder",
+        params, callback);
+}

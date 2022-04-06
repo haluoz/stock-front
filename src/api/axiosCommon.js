@@ -44,15 +44,21 @@ export const reqRealEndAsync=(method, baseUrl, url, params, callback) =>{
 // 通用公用方法（不包含回调）
 export const reqRealEndAsyncNoCallback=(method, baseUrl, url, params) =>{
     params.token = sessionStorage.getItem('token');
-    return axios({
+    const config = {
+        method:method,
         timeout: 5000,
         baseURL: baseUrl,
         url: url,
         headers: {
             'Content-type': 'application/x-www-form-urlencoded'
         },
-        data: Qs.stringify(params),
         //默认为false 后端需要split
         traditional: true
-    });
+    }
+    if (method === 'get') {
+        config.params = params
+    } else {
+        config.data = Qs.stringify(params)
+    }
+    return axios(config);
 }

@@ -29,21 +29,25 @@
                 queryStocksByCode({
                     key:queryString
                 }).then(res =>{
-                    if (res.code != 0){
-                        this.$router.replace({
+                    if(res.data.code != 0){
+                        this.$route.replace({
                             path: "login",
                             query: {
                                 msg: result.message
                             }
-                        })
+                        });
                     }else {
                         let resData = res.data.data;
                         for(let i of resData){
-                            i.value = ('000000' + i.code).slice(-6) + '--' + i.name;
+                            i.value = ('000000' + i.code).slice(-6)
+                            + '--' + i.name;
                         }
                         list = resData;
+                        //通知自动提示框显示哪几项
+                        callback(list);
                     }
                 });
+
                 callback(list);
                 // let list = [{}];
                 // queryCodeName({

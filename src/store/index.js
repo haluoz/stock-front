@@ -29,6 +29,5 @@ export default new Vuex.Store({
   },
   // similar as state (optional)
   modules: {
-
   }
 })

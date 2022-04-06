@@ -61,11 +61,11 @@
             this.tableData = this.positionData;
             this.balance = this.balanceData;
         },
-        computed:{
-            positionData(){
-              return this.$store.state.positionData;
+        computed: {
+            positionData() {
+                return this.$store.state.positionData;
             },
-            balanceData(){
+            balanceData() {
                 return moneyFormat(this.$store.state.balance);
             }
         },
@@ -82,7 +82,7 @@
             return {
                 tableData: [],
                 dataTotalCount: 4,
-                balance: 10,
+                balance: 100,
                 query: {
                     currentPage: 1, // 当前页码
                     pageSize: 2 // 每页的数据条数
@@ -121,10 +121,6 @@
             cellStyle({row, column, rowIndex, columnIndex}) {
                     return "padding:2px";
             },
-        },
-        computed: {},
-        watch: {},
-        created() {
         }
     }
 </script>

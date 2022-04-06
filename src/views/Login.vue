@@ -111,7 +111,7 @@
                         queryTrade();
                         queryOrder();
                         queryPosition();
-                    }, 1000)
+                    }, 500)
                 }
             }
         }

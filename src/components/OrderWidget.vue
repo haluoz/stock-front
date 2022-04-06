@@ -18,8 +18,9 @@
             </el-form-item>
             <el-form-item label="价格">
                 <el-input-number v-model="price" controls-position="right"
-                                 :step="0.01"
-                                 :min="0.01"/>
+                                @change="handlePrice"
+                                :step="0.01"
+                                :min="0.01"/>
             </el-form-item>
             <el-form-item :label="(direction === 0 ? '买入' : '卖出') + '(股)'">
                 <el-input-number v-model="volume" controls-position="right"
@@ -27,7 +28,7 @@
             </el-form-item>
 
             <el-form-item>
-                <el-button :type="direction === 0 ? 'danger' : 'success'" style="float: right" >
+                <el-button :type="direction === 0 ? 'danger' : 'success'" style="float: right" @click="onOrder">
                     {{direction === 0 ? '买入' : '卖出'}}
                 </el-button>
             </el-form-item>
@@ -36,7 +37,10 @@
 </template>
 
 <script>
-
+    import moment from 'moment';
+    import { constants } from '../api/constants';
+    import { sendOrder } from '../api/orderApi';
+    import OrderQueryVue from '../views/OrderQuery.vue';
     import CodeInput from "./CodeInput";
 
     export default {
@@ -70,7 +74,41 @@
                 //     }
                 // }
             },
-
+            onOrder(){
+                sendOrder({
+                    uid: sessionStorage.getItem("uid"),
+                    type: constants.NEW_ORDER,
+                    timestamp: moment.now(),
+                    code: this.code,
+                    direction: this.direction,
+                    price: this.price * constants.MULTI_FACTOR,
+                    volume: this.volume,
+                    orderType: constants.LIMIT
+                }, this.handleOrderResponse);
+            },
+            handleOrderResponse(code, msg, data){
+                if(code === 0){
+                    this.$message.success("委托送往交易所");
+                }else{
+                    this.$message.console.error("委托失败：" + msg);
+                }
+            },
+            handlePrice(){
+                if (this.direction === constants.SELL) {
+                    let posiArr = this.$store.state.posiData;
+                    for (let i = 0, len = posiArr.length; i < len; i++) {
+                        if (posiArr[i].code == this.code) {
+                            this.affordCount = posiArr[i].count;
+                        }
+                    }
+                } else {
+                    //总资金/委托价格 向下取整
+                    this.affordCount = parseInt(
+                        (this.$store.state.balance / constants.MULTI_FACTOR)
+                        / this.price
+                    );
+                }
+            }
         },
         created() {
             this.$bus.on("codeinput-selected", this.updateSelectCode);
